@@ -1,0 +1,14 @@
+wso2am-/
+wso2is-/
+wso2mi-/
+.zip
+.jar
+.jks
+.p12
+.pem
+.key
+shared-key
+logs/
+.log
+.DS_Store
+Customer_projects/
