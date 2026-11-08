@@ -1,0 +1,18 @@
+rules:
+  finance-no-unlimited-plan:
+    description: "Finance APIs must not offer the Unlimited business plan."
+    message: "Unlimited plan is not allowed. Use a limited plan such as Gold."
+    severity: error
+    given: "$.data.policies[*]"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "^Unlimited$"
+  finance-technical-owner:
+    description: "Finance APIs must have a technical owner."
+    message: "Technical owner is missing. Set it in Business Info."
+    severity: warn
+    given: "$.data"
+    then:
+      field: "businessInformation.technicalOwner"
+      function: truthy
