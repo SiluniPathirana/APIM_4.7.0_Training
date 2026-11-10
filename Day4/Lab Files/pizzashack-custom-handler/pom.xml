@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.pizzashack</groupId>
+    <artifactId>pizzashack-custom-handler</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+    <name>PizzaShack Custom Handler</name>
+    <description>Sample API Gateway handler for the WSO2 API Manager 4.7.0 training (Lab 19)</description>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Same version as repository/components/plugins/synapse-core_*.jar in API Manager 4.7.0 -->
+        <synapse.version>4.1.0.wso2v40</synapse.version>
+        <!-- Same version as repository/components/plugins/axis2_*.jar in API Manager 4.7.0 -->
+        <axis2.version>1.6.1.wso2v125</axis2.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>wso2-nexus</id>
+            <name>WSO2 public repository</name>
+            <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Provided by API Manager at runtime: not packaged into the jar -->
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-core</artifactId>
+            <version>${synapse.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2.wso2</groupId>
+            <artifactId>axis2</artifactId>
+            <version>${axis2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- Builds target/pizzashack-custom-handler-1.0.jar -->
+        <finalName>pizzashack-custom-handler-1.0</finalName>
+    </build>
+</project>
