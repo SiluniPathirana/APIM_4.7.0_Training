@@ -1,0 +1,55 @@
+# Deploys the API projects that changed since the last dev deployment.
+# API projects come from the main branch; environment values (params.yaml) from the deployment branch.
+name: Deploy APIs to dev
+
+on:
+  push:
+    branches: [main]      # every push to main deploys the changed APIs to dev
+  workflow_dispatch:      # "Run workflow" button, for example after a params.yaml change
+
+concurrency: apictl       # apictl keeps its settings on the runner, so run one deployment at a time
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      APIM_ENV: dev
+      APIM_URL: ${{ vars.APIM_DEV_URL }}
+      APIM_USERNAME: ${{ secrets.APIM_USERNAME }}
+      APIM_PASSWORD: ${{ secrets.APIM_PASSWORD }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Check out API projects (main)
+        uses: actions/checkout@v4
+        with:
+          path: source
+          fetch-depth: 0    # apictl compares with the last deployed commit, so the full history is needed
+
+      - name: Check out environment values (deployment branch)
+        uses: actions/checkout@v4
+        with:
+          ref: deployment
+          path: deployment
+          fetch-depth: 0
+
+      - name: Add apictl to the PATH
+        run: echo "${{ vars.APICTL_DIR }}" >> "$GITHUB_PATH"
+
+      - name: Configure apictl and log in
+        run: |
+          envs=$(apictl get envs --format "{{.Name}}")
+          grep -qx "$APIM_ENV" <<< "$envs" || apictl add env "$APIM_ENV" --apim "$APIM_URL"
+          apictl set --vcs-source-repo-path "$GITHUB_WORKSPACE/source"
+          apictl set --vcs-deployment-repo-path "$GITHUB_WORKSPACE/deployment"
+          echo "$APIM_PASSWORD" | apictl login "$APIM_ENV" -u "$APIM_USERNAME" --password-stdin -k
+
+      - name: Show the API projects to deploy
+        working-directory: source
+        run: apictl vcs status -e "$APIM_ENV"
+
+      - name: Deploy
+        working-directory: source
+        run: apictl vcs deploy -e "$APIM_ENV" -k
